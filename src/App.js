@@ -1,5 +1,6 @@
 import "./App.css";
 import About from "./pages/About";
+import BoardList from "./pages/BoardList";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
 import Login from "./pages/Login";
@@ -15,6 +16,7 @@ function App() {
         <Route path="/signUp" element={<SignUp />} />
         <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/board" element={<BoardList />} />
           <Route path="/about" element={<About />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:name" element={<Profile />} />

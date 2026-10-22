@@ -146,10 +146,11 @@
 // export default SignUp;
 
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
+import AxiosApi from "../api/AxiosApi";
 
 /* ───────── 정규식 ───────── */
 // 이메일: 공백·@ 없는 문자 + @ + 도메인 + . + 2자 이상 최상위 도메인
@@ -218,6 +219,7 @@ const Signup = () => {
   const [inputPwd, setInputPwd] = useState("");
   const [inputPwdCheck, setInputPwdCheck] = useState("");
   const [inputName, setInputName] = useState("");
+  const [emailStatus, setEmailStatus] = useState("idle");
 
   const nav = useNavigate();
 
@@ -228,18 +230,77 @@ const Signup = () => {
   const isPwdCheck = inputPwdCheck !== "" && inputPwd === inputPwdCheck;
   const isName = NAME_REGEX.test(inputName);
 
-  const isAllValid = isEmail && isPwd && isPwdCheck && isName;
+  /* 정규식 통과 후에만 서버에 중복 확인 요청
+     - 0.5초 디바운스: 입력이 멈췄을 때만 요청
+     - ignore 플래그: 늦게 도착한 이전 응답이 최신 결과를 덮어쓰지 않게 함 */
+  useEffect(() => {
+    if (!isEmail) {
+      setEmailStatus("idle");
+      return;
+    }
 
-  const onSubmit = (e) => {
+    setEmailStatus("checking");
+    let ignore = false;
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await AxiosApi.memberExist(inputEmail);
+        if (ignore) return;
+        // 서버가 '이미 존재하면 true'를 반환한다고 가정
+        setEmailStatus(res.data === true ? "duplicate" : "available");
+      } catch (err) {
+        if (!ignore) setEmailStatus("error");
+      }
+    }, 500);
+
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
+  }, [inputEmail, isEmail]);
+
+  // 형식 OK + 중복 아님 이어야 최종 통과
+  const isEmailOk = isEmail && emailStatus === "available";
+  const isAllValid = isEmailOk && isPwd && isPwdCheck && isName;
+
+  // 이메일 메시지 문구
+  const getEmailMessage = () => {
+    if (!inputEmail) return "";
+    if (!isEmail) return "이메일 형식이 올바르지 않습니다.";
+    switch (emailStatus) {
+      case "checking":
+        return "중복 확인 중...";
+      case "available":
+        return "사용 가능한 이메일입니다.";
+      case "duplicate":
+        return "이미 가입된 이메일입니다.";
+      case "error":
+        return "중복 확인 중 오류가 발생했습니다.";
+      default:
+        return "";
+    }
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!isAllValid) return;
 
-    localStorage.setItem("email", inputEmail);
-    localStorage.setItem("pwd", inputPwd);
-    localStorage.setItem("name", inputName);
+    // localStorage.setItem("email", inputEmail);
+    // localStorage.setItem("pwd", inputPwd);
+    // localStorage.setItem("name", inputName);
 
-    alert(`${inputName}님, 회원가입이 완료되었습니다.`);
-    nav("/", { replace: true }); // 로그인 페이지 경로에 맞게 수정
+    const response = await AxiosApi.memberSignup(
+      inputEmail,
+      inputPwd,
+      inputName,
+    );
+    console.log(response.data);
+    if (response.data === true) {
+      alert(`${inputName}님, 회원가입이 완료되었습니다.`);
+      nav("/", { replace: true }); // 로그인 페이지 경로에 맞게 수정
+    } else {
+      alert("회원 가입이 실패 했습니다.");
+    }
   };
 
   return (
@@ -254,12 +315,7 @@ const Signup = () => {
             placeholder="이메일"
             onChange={(e) => setInputEmail(e.target.value.trim())}
           />
-          <Message $valid={isEmail}>
-            {inputEmail &&
-              (isEmail
-                ? "사용 가능한 이메일입니다."
-                : "이메일 형식이 올바르지 않습니다.")}
-          </Message>
+          <Message $valid={isEmailOk}>{getEmailMessage()}</Message>
         </Field>
 
         <Field>

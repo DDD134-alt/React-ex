@@ -20,7 +20,8 @@ const Home = () => {
       <br />
       <Link to="/profile">프로파일로 이동</Link>
       <br />
-
+      <Link to="/board">게시글</Link>
+      <br />
       <h3>콤보 박스 프로필 이동</h3>
       <select value={selected} onChange={handleChange}>
         <option value="">프로필 선택</option>

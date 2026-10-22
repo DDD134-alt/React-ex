@@ -115,6 +115,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
+import AxiosApi from "../api/AxiosApi";
 
 // 화면 전체를 차지하고, 가운데에 로그인 박스를 배치
 const Container = styled.div`
@@ -165,13 +166,15 @@ const Login = () => {
   const isValid = inputEmail.trim() !== "" && inputPwd !== "";
 
   // form의 onSubmit으로 처리하면 Enter 키로도 로그인 가능
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault(); // 페이지 새로고침 방지
 
-    const localEmail = localStorage.getItem("email");
-    const localPwd = localStorage.getItem("pwd");
+    // const localEmail = localStorage.getItem("email");
+    // const localPwd = localStorage.getItem("pwd");
 
-    if (inputEmail.trim() === localEmail && inputPwd === localPwd) {
+    const response = await AxiosApi.memberLogin(inputEmail, inputPwd);
+    console.log(response.data);
+    if (response.data) {
       nav("/home", { replace: true }); // 뒤로가기로 로그인 화면에 다시 오지 않도록
     } else {
       alert("이메일 또는 비밀번호가 틀립니다.");
