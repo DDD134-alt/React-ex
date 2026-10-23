@@ -175,6 +175,8 @@ const Login = () => {
     const response = await AxiosApi.memberLogin(inputEmail, inputPwd);
     console.log(response.data);
     if (response.data) {
+      localStorage.setItem("isLogin", "TRUE");
+      localStorage.setItem("email", "inputEmail");
       nav("/home", { replace: true }); // 뒤로가기로 로그인 화면에 다시 오지 않도록
     } else {
       alert("이메일 또는 비밀번호가 틀립니다.");

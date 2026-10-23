@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import AxiosApi from "../api/AxiosApi";
-import BoardItem from "../components/board/boardItem";
+import AxiosApi from "../../api/AxiosApi";
+import BoardItem from "../../components/board/boardItem";
 
 const Container = styled.div`
   max-width: 720px;
@@ -51,19 +51,19 @@ const Empty = styled.p`
   color: #888;
 `;
 
-const DeleteBtn = styled.button`
-  padding: 6px 12px;
-  color: white;
-  background-color: #ff4d4f;
-  font-size: 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+// const DeleteBtn = styled.button`
+//   padding: 6px 12px;
+//   color: white;
+//   background-color: #ff4d4f;
+//   font-size: 12px;
+//   border: none;
+//   border-radius: 4px;
+//   cursor: pointer;
 
-  &:hover {
-    background-color: #d9363e;
-  }
-`;
+//   &:hover {
+//     background-color: #d9363e;
+//   }
+// `;
 
 const BoardList = () => {
   const [boards, setBoards] = useState([]);

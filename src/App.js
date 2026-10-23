@@ -1,6 +1,8 @@
 import "./App.css";
 import About from "./pages/About";
-import BoardList from "./pages/BoardList";
+import BoardDetail from "./pages/boards/BoardDetail";
+import BoardList from "./pages/boards/BoardList";
+import BoardWrite from "./pages/boards/BoardWrite";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
 import Login from "./pages/Login";
@@ -17,6 +19,8 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />
           <Route path="/board" element={<BoardList />} />
+          <Route path="/board/write" element={<BoardWrite />} />
+          <Route path="/board/:boardId" element={<BoardDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:name" element={<Profile />} />
