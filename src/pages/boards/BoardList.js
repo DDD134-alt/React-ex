@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import AxiosApi from "../../api/AxiosApi";
-import BoardItem from "../../components/board/boardItem";
+import BoardItem from "../../components/board/BoardItem";
 
 const Container = styled.div`
   max-width: 720px;
@@ -10,6 +10,7 @@ const Container = styled.div`
   padding: 24px 20px;
 `;
 
+// 제목과 글쓰기 버튼을 한 줄에 배치
 const Top = styled.div`
   display: flex;
   justify-content: space-between;
@@ -51,24 +52,11 @@ const Empty = styled.p`
   color: #888;
 `;
 
-// const DeleteBtn = styled.button`
-//   padding: 6px 12px;
-//   color: white;
-//   background-color: #ff4d4f;
-//   font-size: 12px;
-//   border: none;
-//   border-radius: 4px;
-//   cursor: pointer;
-
-//   &:hover {
-//     background-color: #d9363e;
-//   }
-// `;
-
 const BoardList = () => {
   const [boards, setBoards] = useState([]);
   const nav = useNavigate();
 
+  // 화면이 처음 보일 때 게시글 목록 조회
   useEffect(() => {
     const fetchList = async () => {
       try {
@@ -77,7 +65,7 @@ const BoardList = () => {
         setBoards(res.data);
       } catch (err) {
         console.error(err);
-        alert("게시글 목록을 불러오지 못했습니다");
+        alert("게시글 목록을 불러오지 못했습니다.");
       }
     };
     fetchList();
@@ -87,12 +75,6 @@ const BoardList = () => {
   const handleItemClick = (boardId) => {
     nav(`/board/${boardId}`);
   };
-
-  // const handleDelete = async (e, boardId) => {
-  //   e.stopPropagation();
-  //   const res = await AxiosApi.boardDelete(boardId);
-  //   console.log(res.data);
-  // };
 
   return (
     <Container>
@@ -109,10 +91,7 @@ const BoardList = () => {
               key={board.boardId}
               board={board}
               onClick={handleItemClick}
-            >
-              {board.title} : {board.content}
-            </BoardItem>
-            // <DeleteBtn onClick={(e) => handleDelete(e, board.boardId)}>삭제</DeleteBtn>
+            />
           ))}
         </List>
       )}

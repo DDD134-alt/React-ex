@@ -58,36 +58,37 @@ const CancelBtn = styled.button`
 `;
 
 const BoardWrite = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const nav = useNavigate();
+  const [title, setTitle] = useState(""); // 제목
+  const [content, setContent] = useState(""); // 내용
+  const nav = useNavigate(); // 페이지 이동
 
+  // 제목, 내용 모두 입력돼야 등록 버튼 활성화
   const isValid = title.trim() !== "" && content.trim() !== "";
 
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!isValid) return;
 
+    // 로그인할 때 저장해 둔 이메일을 작성자로 사용
     const email = localStorage.getItem("email");
     if (!email) {
       alert("로그인이 필요합니다.");
       nav("/");
+      return;
     }
 
     try {
-      const res = await AxiosApi.boardWrite(title, content, email);
+      const res = await AxiosApi.boardWrite(title, content);
       console.log(res.data);
       if (res.data) {
         alert("게시글이 등록되었습니다.");
-        nav("/board", { replace: true });
+        nav("/board", { replace: true }); // 뒤로가기로 작성 화면에 다시 오지 않도록
       } else {
-        // 결과가 정상적으로 왔으나 실패!!!
-        alert("게시글 등록을 실패했습니다.");
+        alert("게시글 등록에 실패했습니다.");
       }
     } catch (err) {
       console.log(err);
-      // 밖에서 통신 실패!!!
-      alert("서버와 통신 중 오류 발생!");
+      alert("서버와 통신 중 오류가 발생했습니다.");
     }
   };
 
@@ -99,12 +100,12 @@ const BoardWrite = () => {
           value={title}
           placeholder="제목을 입력하세요"
           onChange={(e) => setTitle(e.target.value)}
-        ></Input>
+        />
         <TextArea
           value={content}
           placeholder="내용을 입력하세요"
           onChange={(e) => setContent(e.target.value)}
-        ></TextArea>
+        />
         <BtnRow>
           <CancelBtn type="button" onClick={() => nav(-1)}>
             취소

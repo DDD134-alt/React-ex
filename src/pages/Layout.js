@@ -4,41 +4,32 @@ import styled from "styled-components";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh; /* 보이는 화면은 100% 쓰겠다는 뜻 */
-  justify-content: space-between;
-  align-items: center;
+  height: 100vh;
 `;
 
-const Header = styled.div`
-  display: flex;
-  max-width: 1024px;
-  width: 100%;
-  height: 60px;
-  background-color: gray;
+const Header = styled.header`
+  height: 40px;
+  background-color: lightblue;
 `;
 
-const Main = styled.div`
-  display: flex;
-  max-width: 1024px;
-  height: auto;
+const Main = styled.main`
+  flex: 1;
+  background-color: bisque;
 `;
 
-const Footer = styled.div`
-  display: flex;
-  max-width: 1024px;
-  width: 100%;
-  height: 60px;
-  background-color: gray;
+const Footer = styled.footer`
+  height: 40px;
+  background-color: orange;
 `;
 
 const Layout = () => {
   return (
     <Container>
-      <Header>해더영역</Header>
+      <Header>여기는 헤더 영역 입니다.</Header>
       <Main>
         <Outlet />
       </Main>
-      <Footer>풋터영역</Footer>
+      <Footer>여기는 풋터 영역 입니다.</Footer>
     </Container>
   );
 };

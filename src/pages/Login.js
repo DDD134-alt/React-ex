@@ -1,115 +1,3 @@
-// import { Link, useNavigate } from "react-router-dom";
-// import { useState } from "react";
-// import styled from "styled-components";
-// import Button from "../components/common/Button";
-// import Input from "../components/common/Input";
-
-// const Container = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   height: 100vh;
-// `;
-
-// const Form = styled.form`
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   width: 300px;
-//   gap: 15px;
-// `;
-
-// const Title = styled.h1`
-//   font-size: 24px;
-//   font-weight: 500;
-// `;
-
-// // 로그인 입력 필드 정의
-// const loginFields = [
-//   {
-//     label: "이메일",
-//     type: "email",
-//     name: "email",
-//     placeholder: "example@email.com",
-//   },
-//   {
-//     label: "비밀번호",
-//     type: "password",
-//     name: "password",
-//     placeholder: "비밀번호",
-//   },
-// ];
-
-// const Login = () => {
-//   const navigate = useNavigate();
-
-//   // 1. 입력값을 관리할 state 선언
-//   const [form, setForm] = useState({
-//     email: "",
-//     password: "",
-//   });
-
-//   // 2. input 값이 바뀔 때 state를 업데이트하는 함수
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setForm({ ...form, [name]: value });
-//   };
-
-//   // 3. 로그인 버튼을 눌렀을 때 실행되는 함수
-//   const handleLogin = (e) => {
-//     e.preventDefault();
-
-//     // 로컬 스토리지에 저장된 회원가입 정보 가져오기
-//     const savedUser = localStorage.getItem("user");
-
-//     if (!savedUser) {
-//       alert("가입된 정보가 없습니다. 먼저 회원가입을 해주세요.");
-//       return;
-//     }
-
-//     // 문자열로 저장되어 있으므로 객체로 변환 (JSON.parse)
-//     const parsedUser = JSON.parse(savedUser);
-
-//     // 입력한 이메일과 비밀번호가 저장된 정보와 일치하는지 확인
-//     if (
-//       parsedUser.email === form.email &&
-//       parsedUser.password === form.password
-//     ) {
-//       alert("로그인 성공!");
-//       localStorage.setItem("isLoggedIn", "true"); // 로그인 상태 저장
-//       navigate("/home"); // 홈 화면으로 이동
-//     } else {
-//       alert("이메일 또는 비밀번호가 일치하지 않습니다.");
-//     }
-//   };
-
-//   return (
-//     <Container>
-//       <Title>로그인</Title>
-//       <Form onSubmit={handleLogin}>
-//         {loginFields.map((field) => (
-//           <Input
-//             key={field.name}
-//             label={field.label}
-//             type={field.type}
-//             name={field.name}
-//             placeholder={field.placeholder}
-//             value={form[field.name]}
-//             onChange={handleChange}
-//           />
-//         ))}
-//         <Button type="submit">로그인하기</Button>
-//       </Form>
-//       <Link to="/signUp" style={{ marginTop: "15px" }}>
-//         계정이 없으신가요? 가입하기
-//       </Link>
-//     </Container>
-//   );
-// };
-
-// export default Login;
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -156,6 +44,25 @@ const SignupText = styled.p`
   }
 `;
 
+const KakaoBtn = styled.button`
+  width: 100%;
+  height: 50px;
+  color: #191919;
+  background-color: #fee500; /* 카카오 노란색 */
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+`;
+
+// 카카오 인가 코드 요청 주소 (client_id = REST API 키, 공개돼도 되는 값)
+const KAKAO_AUTH_URL =
+  "https://kauth.kakao.com/oauth/authorize?response_type=code" +
+  `&client_id=${process.env.REACT_APP_KAKAO_CLIENT_ID}` +
+  "&redirect_uri=" +
+  encodeURIComponent(process.env.REACT_APP_KAKAO_REDIRECT_URI);
+
 const Login = () => {
   const [inputEmail, setInputEmail] = useState("");
   const [inputPwd, setInputPwd] = useState("");
@@ -169,17 +76,18 @@ const Login = () => {
   const onSubmit = async (e) => {
     e.preventDefault(); // 페이지 새로고침 방지
 
-    // const localEmail = localStorage.getItem("email");
-    // const localPwd = localStorage.getItem("pwd");
-
-    const response = await AxiosApi.memberLogin(inputEmail, inputPwd);
-    console.log(response.data);
-    if (response.data) {
+    try {
+      const response = await AxiosApi.memberLogin(inputEmail, inputPwd);
+      console.log(response.data);
+      // 응답: { grantType, accessToken, accessTokenExpiresIn, refreshToken, refreshTokenExpiresIn }
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      localStorage.setItem("email", inputEmail); // 화면 표시용 (내 댓글 삭제 버튼 등)
       localStorage.setItem("isLogin", "TRUE");
-      localStorage.setItem("email", "inputEmail");
       nav("/home", { replace: true }); // 뒤로가기로 로그인 화면에 다시 오지 않도록
-    } else {
-      alert("이메일 또는 비밀번호가 틀립니다.");
+    } catch (err) {
+      // 실패 시 서버가 401 + { message, code } 응답
+      alert(err.response?.data?.message ?? "이메일 또는 비밀번호가 틀립니다.");
     }
   };
 
@@ -202,6 +110,12 @@ const Login = () => {
         <Button type="submit" enabled={isValid}>
           로그인
         </Button>
+        <KakaoBtn
+          type="button"
+          onClick={() => (window.location.href = KAKAO_AUTH_URL)}
+        >
+          카카오 로그인
+        </KakaoBtn>
         <SignupText>
           계정이 없으신가요?
           <Link to="/signup">회원가입</Link>

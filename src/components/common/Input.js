@@ -1,75 +1,49 @@
-// import styled from "styled-components";
-
-// const Wrapper = styled.div`
-//   display: flex;
-//   width: 100%;
-//   height: auto;
-//   justify-content: center;
-//   align-items: center;
-//   border: 1px solid white;
-//   background: white;
-// `;
-
-// const Label = styled.label`
-//   font-size: 15px;
-// `;
-
-// const StyledInput = styled.input`
-//   display: flex;
-//   margin: 2px;
-//   padding: 5px;
-//   width: 200px;
-//   height: 20px;
-// `;
-
-// const ErrorText = styled.div`
-//   font-size: 15px;
-//   color: red;
-// `;
-
-// const Input = ({ label, error, ...rest }) => {
-//   return (
-//     <Wrapper>
-//       {/* 라벨이 존재할 때만 화면에 보여줌 */}
-//       {label && <Label>{label}</Label>}
-
-//       {/* 나머지 속성(type, name, value, onChange 등)을 input에 그대로 전달 */}
-//       <StyledInput {...rest} />
-
-//       {/* 에러 메시지가 존재할 때만 빨간 글씨로 보여줌 */}
-//       {error && <ErrorText>{error}</ErrorText>}
-//     </Wrapper>
-//   );
-// };
-
-// export default Input;
-
 import styled from "styled-components";
 
-const StyledInput = styled.input`
-  width: 100%;
-  box-sizing: border-box; /* padding/border를 width 안에 포함 → 넘침 방지 */
-  padding: 1em;
-  font-size: 15px;
-  border: 1px solid #999;
-  border-radius: 18px;
-  outline: none;
+// 리스트의 각 항목 (하위 컴포넌트)
+const Item = styled.li`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.1s;
 
-  &:focus {
-    border-color: orange;
+  &:hover {
+    transform: translateY(-2px);
   }
 `;
 
-// type을 props로 받아야 비밀번호 칸을 type="password"로 쓸 수 있음
-const Input = ({ type = "text", value, onChange, placeholder }) => {
+const Title = styled.h3`
+  margin: 0;
+  font-size: 17px;
+  /* 제목이 길면 한 줄로 자르고 ... 처리 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const Meta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #888;
+`;
+
+// 부모(BoardList)로부터 게시글 데이터(board)와 클릭 핸들러(onClick)를 props로 받음
+const BoardItem = ({ board, onClick }) => {
   return (
-    <StyledInput
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-    />
+    <Item onClick={() => onClick(board.boardId)}>
+      <Title>{board.title}</Title>
+      <Meta>
+        <span>{board.name || board.email}</span>
+        <span>{board.regDate?.substring(0, 10)}</span>
+      </Meta>
+    </Item>
   );
 };
 
-export default Input;
+export default BoardItem;

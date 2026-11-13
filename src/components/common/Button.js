@@ -1,27 +1,3 @@
-// import styled from "styled-components";
-
-// const Btn = styled.button`
-//   display: flex;
-//   width: 100px;
-//   height: 50px;
-//   border: 1px solid gray;
-//   background: gray;
-//   color: white;
-//   &:hover {
-//     background: transparent;
-//     color: black;
-//   }
-//   & + button {
-//     margin-left: 16px;
-//   }
-// `;
-
-// const Button = () => {
-//   return <Btn></Btn>;
-// };
-
-// export default Button;
-
 import styled, { css } from "styled-components";
 
 const StyledBtn = styled.button`
